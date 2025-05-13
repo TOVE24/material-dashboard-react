@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Grid,
   Card,
@@ -12,6 +13,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Icon,
 } from "@mui/material";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -22,9 +24,10 @@ import DataTable from "examples/Tables/DataTable";
 import useProductsTableData from "./data/productsTableData";
 
 function Products() {
+  const navigate = useNavigate();
   const {
     columns,
-    rows,
+    rows, // Usamos rows directamente del hook
     loading,
     error,
     page,
@@ -34,6 +37,7 @@ function Products() {
     setSearchTerm,
     categoryFilter,
     setCategoryFilter,
+    deleteDialog,
   } = useProductsTableData();
 
   const handlePageChange = (event, newPage) => {
@@ -43,6 +47,11 @@ function Products() {
   const handleResetFilters = () => {
     setSearchTerm("");
     setCategoryFilter("");
+  };
+
+  // Función para navegar al formulario de creación
+  const handleCreateNew = () => {
+    navigate("/products/new");
   };
 
   return (
@@ -62,39 +71,39 @@ function Products() {
                 borderRadius="lg"
                 coloredShadow="info"
               >
-                <MDTypography variant="h6" color="white">
-                  Lista de Productos
-                </MDTypography>
-              </MDBox>
-              <MDBox p={2}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="Buscar por nombre o SKU"
-                      variant="outlined"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                <Grid container alignItems="center">
+                  <Grid item xs={8}>
+                    <MDTypography variant="h6" color="white">
+                      Lista de Productos
+                    </MDTypography>
                   </Grid>
-                  <Grid item xs={12} md={3}>
-                    <FormControl fullWidth>
-                      <InputLabel>Categoría</InputLabel>
-                      <Select
-                        label="Categoría"
-                        value={categoryFilter}
-                        onChange={(e) => setCategoryFilter(e.target.value)}
-                      >
-                        <MenuItem value="">Todas</MenuItem>
-                        <MenuItem value="electronics">Electrónicos</MenuItem>
-                        <MenuItem value="clothing">Ropa</MenuItem>
-                        <MenuItem value="home">Hogar</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={12} md={3}>
-                    <Button variant="contained" color="info" fullWidth onClick={handleResetFilters}>
-                      Limpiar Filtros
+                  <Grid item xs={4} textAlign="right">
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={handleCreateNew}
+                      startIcon={
+                        <Icon
+                          sx={{
+                            color: "#fff", // Forzar color blanco
+                            fontSize: "1.25rem", // Tamaño adecuado
+                          }}
+                        >
+                          add
+                        </Icon>
+                      }
+                      sx={{
+                        color: "#fff",
+                        backgroundColor: "#4CAF50",
+                        "&:hover": {
+                          backgroundColor: "#388E3C",
+                        },
+                        "& .MuiButton-startIcon": {
+                          marginRight: "8px", // Espaciado adecuado
+                        },
+                      }}
+                    >
+                      Crear Nuevo
                     </Button>
                   </Grid>
                 </Grid>
@@ -136,6 +145,7 @@ function Products() {
           </Grid>
         </Grid>
       </MDBox>
+      {deleteDialog}
       <Footer />
     </DashboardLayout>
   );
